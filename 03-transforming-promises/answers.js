@@ -8,7 +8,12 @@
  */
 function mapPromise(promise, transformer){
   return new Promise((resolve, reject) => {
-    /* IMPLEMENT ME!! */
+    const newP = promise
+      .catch((error) => reject(error))
+      .then((value) => transformer(value));
+
+    newP.then((r) => resolve(r))
+        .catch((error) => reject(error));
   });
 }
 
@@ -19,10 +24,18 @@ function mapPromise(promise, transformer){
  * @param {Promise<number | string>} numberPromise 
  * @returns {Promise<number>}
  */
-function squarePromise(numberPromise){
-  return numberPromise
-    .then(/* IMPLEMENT ME! */);
+function squarePromise(numberPromise) {
+  return numberPromise.then((res) => {
+    return new Promise((resolve, reject) => {
+      if (!isNaN(res)) {
+        resolve(res*= res);
+      } else {
+        reject(`Cannot convert '${res}' to a number!`);
+      }
+    }).catch();
+  });
 }
+
 
 /**
  * EXERCISE 3
@@ -32,7 +45,19 @@ function squarePromise(numberPromise){
  */
 function squarePromiseOrZero(promise){
   return squarePromise(promise)
-    .catch(/* IMPLEMENT ME! */);
+    .catch(res => {
+     return new Promise((resolve, reject) => {
+       const inputP = promise;
+       if (!isNaN(res))
+       {
+       resolve(res*= res)
+       }
+       else
+       {
+       resolve(0)
+       }
+    });
+})
 }
 
 /**
@@ -41,8 +66,18 @@ function squarePromiseOrZero(promise){
  * @param {Promise} promise 
  * @returns {Promise}
  */
+
 function switcheroo(promise){
-  return promise.then(/* IMPLEMENT ME */);
+  return promise.then(
+  (successCb)=> {
+    return new Promise((resolve,reject) => {
+      reject (successCb)})
+                }
+  ,(failureCb) => {
+    return new Promise((resolve,reject) => {
+      resolve (failureCb)})
+                  }
+    )
 }
 
 /**
